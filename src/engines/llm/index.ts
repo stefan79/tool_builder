@@ -63,20 +63,21 @@ export const registerLLMTool: registerToolType = async (server, definition, llmE
 
 const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
     const schema = request.reduce((acc, param) => {
+        let zodField;
         switch (param.type) {
             case "string":
-                acc[param.name] = z.string();
+                zodField = z.string();
                 break;
             case "object":
-                acc[param.name] = z.object({});
+                zodField = z.object({});
                 break;
             case "boolean":
-                acc[param.name] = z.boolean();
+                zodField = z.boolean();
                 break;
         }
-
+        acc[param.name] = zodField.describe(param.description);
         return acc;
-    }, {} as Record<string, any>);
+    }, {} as ZodRawShape);
     return schema;
 }
 

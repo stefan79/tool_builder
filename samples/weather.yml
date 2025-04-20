@@ -1,0 +1,33 @@
+name: weather tool
+version: 1.0.0
+id: weather_tool
+description: A tool to get the weather for a given location and date
+request:
+  - name: location
+    description: For where do you need the weather report?
+    type: string  
+  - name: date
+    description: The date for the weather report in the format of YYYY-MM-DD
+    type: string
+response: 
+  - name: weather
+    description: A short weather report covering temperatures, precipitation, wind conditions, and other relevant information
+    type: string
+engine:
+  type: rest
+  url: https://api.open-meteo.com/v1/forecast
+  method: GET
+  headers:
+    - name: Accept
+      value: application/json
+  parameters:
+    - name: latitude
+      value: 45
+    - name: longitude
+      value: 45
+    - name: start_date
+      value: request.date
+    - name: end_date
+      value: request.date
+    - name: timezone
+      value: "Europe/Berlin"

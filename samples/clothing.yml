@@ -1,0 +1,49 @@
+name: clothing tool
+version: 1.0.0
+id: clothing_tool
+description: A tool which suggests the right clothing and accessories for the weather and activities
+request:
+  - name: highTemperatureCelsius
+    description: The high temperature in degrees Celsius for the day
+    type: number
+  - name: lowTemperatureCelsius
+    description: The low temperature in degrees Celsius for the day
+    type: number
+  - name: precipitation
+    description: The amount of precipitation in mm for the day and its type
+    type: string
+  - name: wind
+    description: The wind speed in km/h for the day
+    type: string
+  - name: humidity
+    description: The humidity percentage for the day
+    type: number
+  - name: uvindex
+    description: The UV index for the day
+    type: number
+  - name: cloudCover
+    description: The cloud cover percentage for the day
+    type: string
+  - name: timeOfDay
+    description: The time of day for the day
+    type: string
+  - name: duration
+    description: The duration of the activities in hours
+    type: number
+  - name: activities
+    description: A list of activities that will be performed
+    type: string
+response: 
+  - name: clothesAccessories
+    description: Will cover Sweater, Pants, Jacket, Sunscreen, Sunglasses, etc.
+    type: string
+engine:
+  type: llm
+  name: gpt-4o
+  prompt: day_finder
+  project: "Day Finder"
+  variables: 
+    - name: currentDate
+      expression: "now()|format('dddd, DD-MM-YYYY')"
+    - name: question
+      expression: "request.question"

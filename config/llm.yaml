@@ -1,0 +1,6 @@
+- name: gpt-4o
+  type: openai  
+  params:
+    model: gpt-4o
+    
+

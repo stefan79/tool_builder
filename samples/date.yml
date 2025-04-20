@@ -3,17 +3,20 @@ version: 1.0.0
 id: date_tool
 description: A tool to get the current date
 request:
-  - name: timezone
-    description: The timezone to use for the date
+  - name: question
+    description: A question about which date a statememt is refering to.
     type: string  
 response: 
   - name: date
     description: The date in the format of YYYY-MM-DD
     type: string
 engine:
-  - type: llm
-    name: gpt-3.5-turbo
-    prompt: "date"
-    variables: 
-      - name: currentDate
-        expression: "now().tz(request.timezone).format('dddd, DD-MM-YYYY')"
+  type: llm
+  name: gpt-4o
+  prompt: day_finder
+  project: "Day Finder"
+  variables: 
+    - name: currentDate
+      expression: "now()|format('dddd, DD-MM-YYYY')"
+    - name: question
+      expression: "request.question"

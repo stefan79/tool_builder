@@ -1,4 +1,3 @@
-
 import * as yaml from 'js-yaml';
 
 export interface ToolParameter {
@@ -16,7 +15,8 @@ export interface EngineConfig {
   type: 'llm' | 'http';
   name: string;
   prompt: string;
-  variables?: EngineVariable[];
+  project?: string;
+  variables: EngineVariable[];
 }
 
 export interface ToolDefinition {
@@ -32,12 +32,6 @@ export interface ToolDefinition {
 export function parseToolDefinition(yamlContent: string): ToolDefinition {
   try {
     const parsed = yaml.load(yamlContent);
-    if (Array.isArray(parsed)) {
-      if (parsed.length !== 1) {
-        throw new Error('Expected exactly one tool definition');
-      }
-      return validateToolDefinition(parsed[0]);
-    }
     return validateToolDefinition(parsed);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -47,7 +41,8 @@ export function parseToolDefinition(yamlContent: string): ToolDefinition {
 
 function validateToolDefinition(parsed: unknown): ToolDefinition {
   if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Invalid tool definition format');
+    const definition = typeof parsed;
+    throw new Error(`Invalid tool definition format: ${definition}`);
   }
 
   const tool = parsed as Record<string, unknown>;
@@ -106,7 +101,8 @@ function validateToolDefinition(parsed: unknown): ToolDefinition {
   const engine: EngineConfig = {
     type: e.type as 'llm' | 'http',
     name: e.name,
-    prompt: e.prompt
+    prompt: e.prompt,
+    variables: []
   };
 
   if (e.variables) {

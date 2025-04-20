@@ -1,4 +1,4 @@
-import { parseToolDefinition } from '../tool_definition';
+import { parseToolDefinition } from '../tool/definition';
 
 describe('Tool Definition Parser', () => {
   const validToolYaml = `

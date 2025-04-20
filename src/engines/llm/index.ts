@@ -11,7 +11,7 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
 import { Callbacks } from "@langchain/core/callbacks/manager";
 import { z, ZodRawShape } from 'zod';
-import { CallToolResult } from "@modelcontextprotocol/sdk/types";
+import { CallToolResult, RegisteredTool } from "@modelcontextprotocol/sdk/types";
 
 export interface LLMEngine {
     name: string;
@@ -26,11 +26,10 @@ export interface Reponse {
 const jexlInstance = new Jexl();
 jexlInstance.addFunction('now', () => dayjs());
 jexlInstance.addTransform("format", (date: dayjs.Dayjs, format: string) => {
-    console.log("Date", date);
     return date.format(format);
 })
 
-export type registerToolType = (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => Promise<void>;
+export type registerToolType = (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => Promise<RegisteredTool>;
 
 export const registerLLMTool: registerToolType = async (server, definition, llmEngines) => {
     const engine = llmEngines[definition.engine.name];
@@ -54,7 +53,7 @@ export const registerLLMTool: registerToolType = async (server, definition, llmE
 
     const skeleton = mcpToolHandler(definition.engine.variables, chain, config);
 
-    server.tool(
+    return server.tool(
         definition.id,
         definition.description,
         zodSchemaGenerator(definition.request),

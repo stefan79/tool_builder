@@ -1,11 +1,13 @@
 import express  from 'express';
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import morgan from 'morgan';
 import { McpServer } from    '@modelcontextprotocol/sdk/server/mcp.js';
 import { routes } from './routes';
+import { ToolRepository } from '../tool';
 
-export const startExpressServer = (mcpServer: McpServer) => {
+export const startExpressServer = (mcpServer: McpServer, repository: ToolRepository) => {
     const app = express();
-    app.use('/', routes(mcpServer));
+    app.use(morgan('dev')); // Log requests to console
+    app.use('/', routes(mcpServer, repository));
     app.listen(3000, () => {
         console.log('Server started on port 3000');
     });

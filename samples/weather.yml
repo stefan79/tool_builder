@@ -15,24 +15,25 @@ response:
     type: string
 engine:
   type: rest
+  name: default
   url: https://api.open-meteo.com/v1/forecast
   method: GET
   headers:
     - name: Accept
-      value: application/json
+      expression: application/json
     - name: API_TOKEN
-      value: env.METEO_API_TOKEN
+      expression: env.METEO_API_TOKEN
   parameters:
     - name: latitude
-      value: request.location.latitude
+      expression: request.location.latitude
     - name: longitude
-      value: request.location.longitude
+      expression: request.location.longitude
     - name: start_date
-      value: request.date
+      expression: request.date
     - name: end_date
-      value: request.date
+      expression: request.date
     - name: timezone
       value: "Europe/Berlin"
   response:
-    - header: Temperatures
-      content: dfsdf sdfjksdflk sdflj 
+    - section: Temperatures
+      expresion: dfsdf sdfjksdflk sdflj 

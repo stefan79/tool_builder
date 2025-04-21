@@ -4,17 +4,30 @@ export interface ToolParameter {
   type: 'string' | 'object' | 'boolean';
 }
 
-export interface EngineVariable {
+export interface KeyedExpression {
   name: string;
   expression: string;
 }
 
-export interface EngineConfig {
-  type: 'llm' | 'http';
+export interface BaseEngineConfig {
+  type: 'llm' | 'rest';
   name: string;
+}
+
+export interface LLMEngineConfig extends BaseEngineConfig {
+  type: 'llm';
   prompt: string;
   project?: string;
-  variables: EngineVariable[];
+  variables: KeyedExpression[];
+}
+
+export interface RestEngineConfig extends BaseEngineConfig {
+  type: 'rest';
+  url: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  headers: KeyedExpression[];
+  parameters: KeyedExpression[];
+  response: KeyedExpression[];
 }
 
 export interface ToolDefinition {
@@ -24,6 +37,6 @@ export interface ToolDefinition {
   description: string;
   request: ToolParameter[];
   response: ToolParameter[];
-  engine: EngineConfig;
+  engine: BaseEngineConfig;
 }
 

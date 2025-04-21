@@ -1,7 +1,7 @@
 import { LLMConfig } from "./definitions";
 import {OpenAIEngineBuilder} from "./models/openai";
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolDefinition, EngineVariable, ToolParameter } from '../../tool/definition';
+import { ToolDefinition, KeyedExpression, ToolParameter } from '../../tool/definition';
 import * as hub from "langchain/hub/node";
 import {Jexl} from 'jexl';
 import { Runnable, RunnableConfig, RunnableSequence } from "@langchain/core/runnables";
@@ -82,7 +82,7 @@ const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
 }
 
 const mcpToolHandler = (
-    variableDefinitions: EngineVariable[], 
+    variableDefinitions: KeyedExpression[], 
     chain: RunnableSequence,
     config: RunnableConfig    
 ) => async (args: Record<string, any>): Promise<CallToolResult> => {

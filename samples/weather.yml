@@ -20,14 +20,19 @@ engine:
   headers:
     - name: Accept
       value: application/json
+    - name: API_TOKEN
+      value: env.METEO_API_TOKEN
   parameters:
     - name: latitude
-      value: 45
+      value: request.location.latitude
     - name: longitude
-      value: 45
+      value: request.location.longitude
     - name: start_date
       value: request.date
     - name: end_date
       value: request.date
     - name: timezone
       value: "Europe/Berlin"
+  response:
+    - header: Temperatures
+      content: dfsdf sdfjksdflk sdflj 

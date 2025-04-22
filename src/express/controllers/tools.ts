@@ -61,7 +61,7 @@ export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, nex
                 req.context.tool = parseToolDefinitionFromYaml(yamlContent);
                 next();
             } catch (error) {
-                res.status(400).send({ error: 'Failed to parse tool definition: ' + error.message });
+                res.status(400).send({ error: 'Failed to parse tool definition: ' + (error instanceof Error ? error.message : 'Unknown error') });
             }
         });
     } else {

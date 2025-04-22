@@ -1,17 +1,14 @@
-import { LLMConfig } from "./definitions";
-import {OpenAIEngineBuilder} from "./models/openai";
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolDefinition, KeyedExpression, ToolParameter } from '../../tool/definition';
+import { McpServer, RegisteredTool} from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ToolDefinition, KeyedExpression, ToolParameter, LLMEngineConfig } from '../../tool/definition';
 import * as hub from "langchain/hub/node";
-import {Jexl} from 'jexl';
-import { Runnable, RunnableConfig, RunnableSequence } from "@langchain/core/runnables";
-import dayjs from 'dayjs';
+import { RunnableConfig, RunnableSequence } from "@langchain/core/runnables";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
-import { Callbacks } from "@langchain/core/callbacks/manager";
 import { z, ZodRawShape } from 'zod';
-import { CallToolResult, RegisteredTool } from "@modelcontextprotocol/sdk/types";
+import { CallToolResult } from "@modelcontextprotocol/sdk/types";
+import { buildJexlInstance } from "../util";
+import { Jexl } from 'jexl';
 
 export interface LLMEngine {
     name: string;
@@ -23,12 +20,6 @@ export interface Reponse {
     error?: string;
 }
 
-const jexlInstance = new Jexl();
-jexlInstance.addFunction('now', () => dayjs());
-jexlInstance.addTransform("format", (date: dayjs.Dayjs, format: string) => {
-    return date.format(format);
-})
-
 export type registerToolType = (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => Promise<RegisteredTool>;
 
 export const registerLLMTool: registerToolType = async (server, definition, llmEngines) => {
@@ -36,11 +27,12 @@ export const registerLLMTool: registerToolType = async (server, definition, llmE
     if (!engine) {
         throw new Error(`LLM engine ${definition.engine.name} not found`);
     }
-    const promptData = await hub.pull(definition.engine.prompt);
+    const llmEngineConfig = definition.engine as LLMEngineConfig;
+    const promptData = await hub.pull(llmEngineConfig.prompt);
 
     const outputParser = new StringOutputParser();
     const chain = RunnableSequence.from([promptData, engine.model, outputParser]);
-    const tracer = new LangChainTracer({projectName: definition.engine.project});
+    const tracer = new LangChainTracer({projectName: llmEngineConfig.project});
     const metadata = {
         id: definition.id,
         name: definition.name,
@@ -51,7 +43,7 @@ export const registerLLMTool: registerToolType = async (server, definition, llmE
         metadata
     }
 
-    const skeleton = mcpToolHandler(definition.engine.variables, chain, config);
+    const skeleton = mcpToolHandler(llmEngineConfig.variables, chain, config, buildJexlInstance());
 
     return server.tool(
         definition.id,
@@ -84,12 +76,13 @@ const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
 const mcpToolHandler = (
     variableDefinitions: KeyedExpression[], 
     chain: RunnableSequence,
-    config: RunnableConfig    
+    config: RunnableConfig,
+    jexl:  InstanceType<typeof Jexl>    
 ) => async (args: Record<string, any>): Promise<CallToolResult> => {
 
     const variables: Record<string, any> = {};
     for (const variableDefinition of variableDefinitions) {
-        const value = await jexlInstance.eval(variableDefinition.expression, {request: args});
+        const value = await jexl.eval(variableDefinition.expression, {request: args});
         variables[variableDefinition.name] = value;
     }
     //const prompt = await promptTemplate.invoke(variables);
@@ -103,5 +96,3 @@ const mcpToolHandler = (
         ]
     }
 }
-    
-    

@@ -5,9 +5,8 @@ import { RunnableConfig, RunnableSequence } from "@langchain/core/runnables";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
-import { z, ZodRawShape } from 'zod';
 import { CallToolResult } from "@modelcontextprotocol/sdk/types";
-import { buildJexlInstance } from "../util";
+import { buildJexlInstance, zodSchemaGenerator } from "../util";
 import { Jexl } from 'jexl';
 
 export interface LLMEngine {
@@ -20,9 +19,8 @@ export interface Reponse {
     error?: string;
 }
 
-export type registerToolType = (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => Promise<RegisteredTool>;
 
-export const registerLLMTool: registerToolType = async (server, definition, llmEngines) => {
+export const registerLLMTool = async (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => {
     const engine = llmEngines[definition.engine.name];
     if (!engine) {
         throw new Error(`LLM engine ${definition.engine.name} not found`);
@@ -53,25 +51,7 @@ export const registerLLMTool: registerToolType = async (server, definition, llmE
     )
 }
 
-const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
-    const schema = request.reduce((acc, param) => {
-        let zodField;
-        switch (param.type) {
-            case "string":
-                zodField = z.string();
-                break;
-            case "object":
-                zodField = z.object({});
-                break;
-            case "boolean":
-                zodField = z.boolean();
-                break;
-        }
-        acc[param.name] = zodField.describe(param.description);
-        return acc;
-    }, {} as ZodRawShape);
-    return schema;
-}
+
 
 const mcpToolHandler = (
     variableDefinitions: KeyedExpression[], 

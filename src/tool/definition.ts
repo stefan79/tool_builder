@@ -1,7 +1,7 @@
 export interface ToolParameter {
   name: string;
   description: string;
-  type: 'string' | 'object' | 'boolean';
+  type: 'string' | 'number' | 'boolean';
 }
 
 export interface KeyedExpression {
@@ -25,6 +25,7 @@ export interface RestEngineConfig extends BaseEngineConfig {
   type: 'rest';
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  grouping?: string;
   headers: KeyedExpression[];
   parameters: KeyedExpression[];
   response: KeyedExpression[];

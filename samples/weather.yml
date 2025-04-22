@@ -3,7 +3,10 @@ version: 1.0.0
 id: weather_tool
 description: A tool to get the weather for a given location and date
 request:
-  - name: location
+  - name: longitude
+    description: For where do you need the weather report?
+    type: string  
+  - name: latitude
     description: For where do you need the weather report?
     type: string  
   - name: date
@@ -16,24 +19,25 @@ response:
 engine:
   type: rest
   name: default
-  url: https://api.open-meteo.com/v1/forecast
+  url: "\"http://api.weatherapi.com/v1/current.json\""
   method: GET
-  headers:
-    - name: Accept
-      expression: application/json
-    - name: API_TOKEN
-      expression: env.METEO_API_TOKEN
   parameters:
-    - name: latitude
-      expression: request.location.latitude
-    - name: longitude
-      expression: request.location.longitude
-    - name: start_date
-      expression: request.date
-    - name: end_date
-      expression: request.date
-    - name: timezone
-      value: "Europe/Berlin"
+    - name: q
+      expression: "request.latitude+\",\"+request.longitude"
+    - name: key
+      expression: "env.WEATHER_COM_API_KEY"
   response:
-    - section: Temperatures
-      expresion: dfsdf sdfjksdflk sdflj 
+    - name: Summary
+      expression: "\"The weather report for \" + response.location.name + \" / \" + response.location.country + \" on \" + response.location.localtime + \".\""
+    - name: Condition
+      expression: "\"The current condition is \" + response.current.condition.text + \".\""
+    - name: Temperatures
+      expression: "\"The current temperature is \" + response.current.temp_c + \"°C. The feels like temperature is \" + response.current.feelslike_c + \"°C.\""
+    - name: Winds
+      expression: "\"The current wind speed is \" + response.current.wind_mph + \" mph.\""
+    - name: Humidity
+      expression: "\"The current humidity is \" + response.current.humidity + \"%.\""
+    - name: Clouds
+      expression: "\"The current cloud cover is \" + response.current.cloud + \"%.\""
+    - name: UV
+      expression: "\"The current UV index is \" + response.current.uv + \".\""

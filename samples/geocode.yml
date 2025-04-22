@@ -1,0 +1,38 @@
+name: geocode tool
+version: 1.0.0
+id: geocode_tool
+description: A tool to get the geocode for a given location
+request:
+  - name: location
+    description: Text description of the Location
+    type: string  
+response: 
+  - name: location
+    description: A detailed description of the location
+    type: string
+  - name: longitude
+    description: The longitude of the location
+    type: string
+  - name: latitude
+    description: The latitude of the location
+    type: string
+engine:
+  type: rest
+  name: default
+  url: "\"https://geocode.search.hereapi.com/v1/geocode\""
+  method: GET
+  grouping: "response.items"
+  parameters:
+    - name: q
+      expression: "request.location"
+    - name: apiKey
+      expression: "env.HERE_API_KEY"
+  response:
+    - name: Location
+      expression: "\"Title: \" + group.title + \".\""
+    - name: Address
+      expression: "\"Address: \" + group.address.label + \".\""
+    - name: Coordinates
+      expression: "\"Coordinates: \" + group.position.lat + \",\" + group.position.lng + \".\""
+
+

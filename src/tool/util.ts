@@ -17,7 +17,7 @@ const keyedExpressionValidator = (keyName: string, input: Record<string, unknown
     const variable = v as Record<string, unknown>;
     if (!variable.name || typeof variable.name !== 'string' ||
         !variable.expression || typeof variable.expression !== 'string') {
-      throw new Error(`${keyName} must be an array of objects with name and expression`);
+      throw new Error(`${keyName} must be an array of objects with name and expression, got ${JSON.stringify(v)}`);
     }
     return {
       name: variable.name,
@@ -47,6 +47,8 @@ const restEngineValidator = (input: unknown): RestEngineConfig => {
     parameters: [],
     response: []
   };
+
+  engine.grouping = e.grouping ? e.grouping as string : undefined;
 
   engine.headers = keyedExpressionValidator('headers', e);
   engine.parameters = keyedExpressionValidator('parameters', e);
@@ -83,6 +85,7 @@ export function parseToolDefinitionFromYaml(yamlContent: string): ToolDefinition
       return validateToolDefinition(parsed);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error("Could not parse tool definition: ", errorMessage, yamlContent);
       throw new Error(`Failed to parse tool definition: ${errorMessage}`);
     }
   }
@@ -124,13 +127,13 @@ export function marshalToolDefinitionToYaml(tool: ToolDefinition): string {
             !p.type || typeof p.type !== 'string') {
           throw new Error('Invalid parameter definition');
         }
-        if (!['string', 'object', 'boolean'].includes(p.type)) {
+        if (!['string', 'number', 'boolean'].includes(p.type)) {
           throw new Error(`Invalid parameter type: ${p.type}`);
         }
         return {
           name: p.name,
           description: p.description,
-          type: p.type as 'string' | 'object' | 'boolean'
+          type: p.type as 'string' | 'boolean' | 'number'
         };
       });
     };

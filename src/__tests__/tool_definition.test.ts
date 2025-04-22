@@ -1,8 +1,8 @@
-import { parseToolDefinition } from '../tool/definition';
+import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from '../tool/util';
 
 describe('Tool Definition Parser', () => {
   const validToolYaml = `
-- name: date tool
+  name: date tool
   version: 1.0.0
   id: date_tool
   description: A tool to get the current date
@@ -24,7 +24,7 @@ describe('Tool Definition Parser', () => {
 `;
 
   it('should successfully parse a valid tool definition', () => {
-    const result = parseToolDefinition(validToolYaml);
+    const result = parseToolDefinitionFromYaml(validToolYaml);
     expect(result).toEqual({
       name: 'date tool',
       version: '1.0.0',
@@ -62,12 +62,12 @@ describe('Tool Definition Parser', () => {
       description: The timezone to use for the date
       type: string
 `;
-    expect(() => parseToolDefinition(invalidYaml)).toThrow('Missing required fields');
+    expect(() => parseToolDefinitionFromYaml(invalidYaml)).toThrow('Missing required fields');
   });
 
   it('should throw error for invalid parameter type', () => {
     const invalidTypeYaml = `
-- name: date tool
+  name: date tool
   version: 1.0.0
   id: date_tool
   description: A tool to get the current date
@@ -81,12 +81,12 @@ describe('Tool Definition Parser', () => {
       name: gpt-3.5-turbo
       prompt: "date"
 `;
-    expect(() => parseToolDefinition(invalidTypeYaml)).toThrow('Invalid parameter type');
+    expect(() => parseToolDefinitionFromYaml(invalidTypeYaml)).toThrow('Invalid parameter type');
   });
 
   it('should throw error for missing engine configuration', () => {
     const noEngineYaml = `
-- name: date tool
+  name: date tool
   version: 1.0.0
   id: date_tool
   description: A tool to get the current date
@@ -94,12 +94,12 @@ describe('Tool Definition Parser', () => {
   response: []
   engine: {}
 `;
-    expect(() => parseToolDefinition(noEngineYaml)).toThrow('Engine configuration is required');
+    expect(() => parseToolDefinitionFromYaml(noEngineYaml)).toThrow('Engine configuration is required');
   });
 
   it('should throw error for invalid engine variable configuration', () => {
     const invalidEngineVarYaml = `
-- name: date tool
+  name: date tool
   version: 1.0.0
   id: date_tool
   description: A tool to get the current date
@@ -113,6 +113,6 @@ describe('Tool Definition Parser', () => {
       - name: currentDate
         # missing expression
 `;
-    expect(() => parseToolDefinition(invalidEngineVarYaml)).toThrow('Invalid engine variable configuration');
+    expect(() => parseToolDefinitionFromYaml(invalidEngineVarYaml)).toThrow('Failed to parse tool definition: variables must be an array of objects with name and expression');
   });
 });

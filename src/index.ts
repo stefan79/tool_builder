@@ -6,6 +6,7 @@ import { registerLLMTool } from './engines/llm';
 import { startExpressServer } from './express';
 import { FileToolRepository } from './tool/file';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
+import { registerRESTTool } from './engines/rest';
 
 const tools: Record<string, RegisteredTool> = {};
 
@@ -25,8 +26,13 @@ const startServer = async () => {
     const toolIds = await toolRepository.getToolIds();
     toolIds.forEach(async (id) => {
         const toolDefinition = await toolRepository.getToolById(id);
-        const registeredTool = await registerLLMTool(mcpServer, toolDefinition, engines);
-        tools[id] = registeredTool;
+        if(toolDefinition.engine.type === 'rest') {
+            const registeredTool = await registerRESTTool(mcpServer, toolDefinition);
+            tools[id] = registeredTool;
+        } else if(toolDefinition.engine.type === 'llm') {
+            const registeredTool = await registerLLMTool(mcpServer, toolDefinition, engines);
+            tools[id] = registeredTool;
+        }
     });
 };
 

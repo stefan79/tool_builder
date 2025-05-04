@@ -38,6 +38,6 @@ export interface ToolDefinition {
   description: string;
   request: ToolParameter[];
   response: ToolParameter[];
-  engine: BaseEngineConfig;
+  engine: LLMEngineConfig | RestEngineConfig;
 }
 

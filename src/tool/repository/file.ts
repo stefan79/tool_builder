@@ -1,8 +1,8 @@
-import { ToolDefinition } from "./definition";
-import { ToolRepository } from ".";
+import { ToolDefinition } from "../definition";
+import { ToolRepository } from "..";
 import * as fs from 'fs';
 
-import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from "./util";
+import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from "../util";
 
 export class FileToolRepository implements ToolRepository {
 

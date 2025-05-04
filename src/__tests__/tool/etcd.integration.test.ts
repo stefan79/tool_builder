@@ -14,12 +14,12 @@ describe('EtcdToolRepository Integration Tests', () => {
         
         // Give etcd a moment to start up
         await new Promise(resolve => setTimeout(resolve, 2000));
-    });
+    }, 15000);
 
     
     afterAll(async () => {
         execSync('docker-compose -f docker-compose.test.yml down');
-    });
+    }, 15000);
 
     beforeEach(async () => {
         // Clean up any existing data

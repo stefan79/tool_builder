@@ -1,34 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
 import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from '../../tool/util';
 import { ToolDefinition } from '../../tool/definition';
-import { ToolRepository } from '../../tool/index';
+import { ToolRepository } from '../../tool/repository';
 import * as yaml from 'js-yaml';
-
-declare module 'express' {
-    interface Request {
-        context: {
-            tool?: ToolDefinition;
-            toolIds?: string[];
-        }
-    }
-}
+import {  getContext } from '../index';
 
 export const listTools = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    req.context.toolIds = await repository.getToolIds();
+    const context = getContext(res);
+    context.toolIds = await repository.getToolIds();
     serializeToolsIdsToYamlBody(req, res);
     next();
 };
 
 export const listTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const id = req.params.id;
-    req.context.tool = await repository.getToolById(id);
+    const context = getContext(res);
+    context.tool = await repository.getToolById(id);
     serializeToolDefinitionToYamlBody(req, res);
     next();
 };
 
 export const saveTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const tool = req.context.tool as ToolDefinition;
-    await repository.saveTool(tool);
+    const context = getContext(res);
+    await repository.saveTool(context.tool as ToolDefinition);
     serializeToolDefinitionToYamlBody(req, res);
     next();
 };
@@ -39,14 +33,6 @@ export const deleteTool = (repository: ToolRepository) => async (req: Request, r
     next();
 };
 
-export const createContext = (req: Request, res: Response, next: NextFunction): void => {
-    if (!req.context) {
-        req.context = {};
-    }
-    next();
-};
-
-
 export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, next: NextFunction): void => {
     if (req.headers['content-type'] === 'application/x-yaml') {
         const chunks: Buffer[] = [];
@@ -54,7 +40,8 @@ export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, nex
         req.on('end', () => {
             const yamlContent = Buffer.concat(chunks).toString('utf-8');
             try {
-                req.context.tool = parseToolDefinitionFromYaml(yamlContent);
+                const context = getContext(res);
+                context.tool = parseToolDefinitionFromYaml(yamlContent);
                 next();
             } catch (error) {
                 res.status(400).send({ error: 'Failed to parse tool definition: ' + (error instanceof Error ? error.message : 'Unknown error') });
@@ -66,8 +53,9 @@ export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, nex
 };
 
 const serializeToolsIdsToYamlBody = (req: Request, res: Response): void => {
-    if (req.context.toolIds && Array.isArray(req.context.toolIds)) {
-        const yamlContent = yaml.dump(req.context.toolIds);
+    const context = getContext(res);
+    if (context.toolIds && Array.isArray(context.toolIds)) {
+        const yamlContent = yaml.dump(context.toolIds);
         res.status(200);
         res.setHeader('Content-Type', 'text/yaml');
         res.setHeader('Content-Disposition', 'inline; filename="ids.yaml"');
@@ -77,8 +65,9 @@ const serializeToolsIdsToYamlBody = (req: Request, res: Response): void => {
 
 
 const serializeToolDefinitionToYamlBody = (req: Request, res: Response): void => {
-    if (req.context.tool && typeof req.context.tool === 'object') {
-        const yamlContent = marshalToolDefinitionToYaml(req.context.tool as ToolDefinition);
+    const context = getContext(res);
+    if (context.tool && typeof context.tool === 'object') {
+        const yamlContent = marshalToolDefinitionToYaml(context.tool as ToolDefinition);
         res.status(200);
         res.setHeader('Content-Type', 'text/yaml');
         res.setHeader('Content-Disposition', 'inline; filename="tool.yaml"');

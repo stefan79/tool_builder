@@ -8,6 +8,6 @@ export const mcpRoutes = (server: McpServer): Router => {
 
     // Health check endpoint
     router.get('/sse', routeSse(server));
-    router.post('/messages', routeMessage(server));
+    router.post('/messages', routeMessage());
     return router
 };

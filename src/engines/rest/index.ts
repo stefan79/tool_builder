@@ -31,7 +31,7 @@ export const registerRESTTool = async (server: McpServer, definition: ToolDefini
     const handler = mcpToolHandler(
         restEngineConfig.url,
         restEngineConfig.method,
-        restEngineConfig.grouping,
+        restEngineConfig.grouping || "",
         restEngineConfig.headers,
         restEngineConfig.parameters,
         restEngineConfig.response,

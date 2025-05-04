@@ -1,15 +1,15 @@
-import { Jexl } from 'jexl';
+import Jexl from 'jexl';
 import dayjs from 'dayjs';
 import { ToolParameter } from '../tool/definition';
 import { z, ZodRawShape } from 'zod';
 
-export const buildJexlInstance = (): Jexl => {
-    const jexlInstance = new Jexl();
+export const buildJexlInstance = (): InstanceType<typeof Jexl.Jexl> => {
+    const jexlInstance = new Jexl.Jexl();
     jexlInstance.addFunction('now', () => dayjs());
     jexlInstance.addTransform("format", (date: dayjs.Dayjs, format: string) => {
         return date.format(format);
     })
-    return jexlInstance;
+    return jexlInstance;    
 }
 
 export const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
@@ -31,4 +31,3 @@ export const zodSchemaGenerator = (request: ToolParameter[]): ZodRawShape => {
     }, {} as ZodRawShape);
     return schema;
 }
-

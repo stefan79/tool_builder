@@ -1,5 +1,5 @@
 import { ToolDefinition } from "../definition";
-import { ToolRepository } from "..";
+import { ToolRepository } from "./index";
 import * as fs from 'fs';
 
 import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from "../util";

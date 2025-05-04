@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { mcpRoutes } from './mcp';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolRepository } from '../../tool';
+import { ToolRepository } from '../../tool/repository';
 import { toolsRoutes } from './tools';
 
 export const routes =  (server: McpServer, repository: ToolRepository): Router => {

@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 
 const transports: Record<string, SSEServerTransport> = {}; // Store active SSE transports by session ID
 
-export const routeSse = (server: McpServer) => (req: Request, res: Response) => {
+export const routeSse = (server: McpServer) => (req: Request, res: Response): void => {
   const transport = new SSEServerTransport("/messages", res);
   transports[transport.sessionId] = transport;
 
@@ -13,15 +13,15 @@ export const routeSse = (server: McpServer) => (req: Request, res: Response) => 
     delete transports[transport.sessionId];
   });
 
-  return server.connect(transport);
+  server.connect(transport);
 }
 
-export const routeMessage = (_server: McpServer) => (req: Request, res: Response) => {
+export const routeMessage = () => (req: Request, res: Response): void => {
   const sessionId = req.query.sessionId as string;
   const transport = transports[sessionId];
 
   if (transport) {
-    return transport.handlePostMessage(req, res); // Forward messages to the server
+    transport.handlePostMessage(req, res); // Forward messages to the server
   } else {
     res.status(400).send("No active session found for this sessionId");
   }

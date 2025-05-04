@@ -7,11 +7,11 @@ import { startExpressServer } from './express';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
 import { registerRESTTool } from './engines/rest';
 import { createRepository } from './tool/repository';
-import { config, Config } from './config';
+import { config } from './config';
 
 const tools: Record<string, RegisteredTool> = {};
 
-const startServer = async () => {
+const startServer = async (): Promise<void> => {
     dotenv.config();
 
     const llmConfig = await loadLLMConfigFromFile();
@@ -22,7 +22,7 @@ const startServer = async () => {
     const mcpServer = startMCPServer({name: 'tool_builder', version: '1.0.0'});
 
     //Create Express Server
-    const expressServer = startExpressServer(mcpServer, toolRepository);
+    startExpressServer(mcpServer, toolRepository);
 
     //Load Job Definition
     const toolIds = await toolRepository.getToolIds();

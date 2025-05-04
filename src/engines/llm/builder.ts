@@ -5,7 +5,7 @@ import {LLMEngine} from "./index";
 export type LLMEngineBuilder = (config: LLMConfig) => LLMEngine;
 const builders: Record<LLMConfig['type'], LLMEngineBuilder> = {
     openai: OpenAIEngineBuilder,
-    anthropic: (config: LLMConfig) => {
+    anthropic: () => {
         throw new Error('Anthropic engine not implemented');
     }
 };

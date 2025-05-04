@@ -1,12 +1,9 @@
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { EtcdToolRepository } from '../../tool/repository/etcd';
 import { ToolDefinition } from '../../tool/definition';
 import { execSync } from 'child_process';
 
 describe('EtcdToolRepository Integration Tests', () => {
-    let container: StartedTestContainer;
     let repository: EtcdToolRepository;
-    const testDirectory = 'test-tools';
 
     beforeAll(async () => {
         // Start the test environment using docker-compose

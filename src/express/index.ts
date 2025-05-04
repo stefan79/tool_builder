@@ -4,7 +4,7 @@ import { McpServer } from    '@modelcontextprotocol/sdk/server/mcp.js';
 import { routes } from './routes';
 import { ToolRepository } from '../tool';
 
-export const startExpressServer = (mcpServer: McpServer, repository: ToolRepository) => {
+export const startExpressServer = (mcpServer: McpServer, repository: ToolRepository): void => {
     const app = express();
     app.use(morgan('dev')); // Log requests to console
     app.use('/', routes(mcpServer, repository));

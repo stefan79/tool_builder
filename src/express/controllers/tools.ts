@@ -4,46 +4,42 @@ import { ToolDefinition } from '../../tool/definition';
 import { ToolRepository } from '../../tool/index';
 import * as yaml from 'js-yaml';
 
-declare global{
-    namespace Express {
-        interface Request {
-            context: {
-                tool?: ToolDefinition;
-                toolIds?: string[];
-            }
+declare module 'express' {
+    interface Request {
+        context: {
+            tool?: ToolDefinition;
+            toolIds?: string[];
         }
     }
 }
 
-
-
-export const listTools = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction) => {
+export const listTools = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     req.context.toolIds = await repository.getToolIds();
     serializeToolsIdsToYamlBody(req, res);
     next();
 };
 
-export const listTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction) => {
+export const listTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const id = req.params.id;
     req.context.tool = await repository.getToolById(id);
     serializeToolDefinitionToYamlBody(req, res);
     next();
 };
 
-export const saveTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction) => {
+export const saveTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const tool = req.context.tool as ToolDefinition;
     await repository.saveTool(tool);
     serializeToolDefinitionToYamlBody(req, res);
     next();
 };
 
-export const deleteTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction) => {
+export const deleteTool = (repository: ToolRepository) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const id = req.params.id;
     await repository.deleteTool(id);
     next();
 };
 
-export const createContext = (req: Request, res: Response, next: NextFunction) => {
+export const createContext = (req: Request, res: Response, next: NextFunction): void => {
     if (!req.context) {
         req.context = {};
     }
@@ -51,7 +47,7 @@ export const createContext = (req: Request, res: Response, next: NextFunction) =
 };
 
 
-export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, next: NextFunction) => {
+export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, next: NextFunction): void => {
     if (req.headers['content-type'] === 'application/x-yaml') {
         const chunks: Buffer[] = [];
         req.on('data', (chunk) => chunks.push(chunk));
@@ -69,7 +65,7 @@ export const parseToolDefinitionFromYamlBody = (req: Request, res: Response, nex
     }
 };
 
-const serializeToolsIdsToYamlBody = (req: Request, res: Response) => {
+const serializeToolsIdsToYamlBody = (req: Request, res: Response): void => {
     if (req.context.toolIds && Array.isArray(req.context.toolIds)) {
         const yamlContent = yaml.dump(req.context.toolIds);
         res.status(200);
@@ -80,7 +76,7 @@ const serializeToolsIdsToYamlBody = (req: Request, res: Response) => {
 };
 
 
-const serializeToolDefinitionToYamlBody = (req: Request, res: Response) => {
+const serializeToolDefinitionToYamlBody = (req: Request, res: Response): void => {
     if (req.context.tool && typeof req.context.tool === 'object') {
         const yamlContent = marshalToolDefinitionToYaml(req.context.tool as ToolDefinition);
         res.status(200);

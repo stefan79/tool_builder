@@ -1,4 +1,4 @@
-import { LLMEngineConfig, ToolDefinition, ToolParameter, RestEngineConfig, BaseEngineConfig, KeyedExpression } from "./definition";
+import { LLMEngineConfig, ToolDefinition, ToolParameter, RestEngineConfig, KeyedExpression } from "./definition";
 import * as yaml from 'js-yaml';
 
 const keyedExpressionValidator = (keyName: string, input: Record<string, unknown>): KeyedExpression[] => {

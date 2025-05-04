@@ -1,5 +1,5 @@
-import { McpServer, RegisteredTool} from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ToolDefinition, KeyedExpression, ToolParameter, LLMEngineConfig } from '../../tool/definition';
+import { McpServer} from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ToolDefinition, KeyedExpression, RegisteredTool, LLMEngineConfig } from '../../tool/definition';
 import * as hub from "langchain/hub/node";
 import { RunnableConfig, RunnableSequence } from "@langchain/core/runnables";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
@@ -20,7 +20,7 @@ export interface Reponse {
 }
 
 
-export const registerLLMTool = async (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>) => {
+export const registerLLMTool = async (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>): Promise<RegisteredTool> => {
     const engine = llmEngines[definition.engine.name];
     if (!engine) {
         throw new Error(`LLM engine ${definition.engine.name} not found`);
@@ -58,9 +58,9 @@ const mcpToolHandler = (
     chain: RunnableSequence,
     config: RunnableConfig,
     jexl:  InstanceType<typeof Jexl>    
-) => async (args: Record<string, any>): Promise<CallToolResult> => {
+) => async (args: Record<string, unknown>): Promise<CallToolResult> => {
 
-    const variables: Record<string, any> = {};
+    const variables: Record<string, unknown> = {};
     for (const variableDefinition of variableDefinitions) {
         const value = await jexl.eval(variableDefinition.expression, {request: args});
         variables[variableDefinition.name] = value;

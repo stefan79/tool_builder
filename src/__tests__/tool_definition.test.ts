@@ -1,4 +1,4 @@
-import { parseToolDefinitionFromYaml, marshalToolDefinitionToYaml } from '../tool/util';
+import { parseToolDefinitionFromYaml } from '../tool/util';
 
 describe('Tool Definition Parser', () => {
   const validToolYaml = `
@@ -62,7 +62,7 @@ describe('Tool Definition Parser', () => {
       description: The timezone to use for the date
       type: string
 `;
-    expect(() => parseToolDefinitionFromYaml(invalidYaml)).toThrow('Missing required fields');
+    expect(() => parseToolDefinitionFromYaml(invalidYaml)).toThrow('Failed to parse tool definition: Missing required fields in tool definition: name, version, id, description');
   });
 
   it('should throw error for invalid parameter type', () => {

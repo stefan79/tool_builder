@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { ToolParameter } from '../tool/definition';
 import { z, ZodRawShape } from 'zod';
 
-export const buildJexlInstance = () => {
+export const buildJexlInstance = (): Jexl => {
     const jexlInstance = new Jexl();
     jexlInstance.addFunction('now', () => dayjs());
     jexlInstance.addTransform("format", (date: dayjs.Dayjs, format: string) => {

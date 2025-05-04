@@ -1,4 +1,4 @@
-import { LLMEngineConfig, ToolDefinition, ToolParameter, RestEngineConfig, BaseEngineConfig, KeyedExpression } from "./definition";
+import { LLMEngineConfig, ToolDefinition, ToolParameter, RestEngineConfig, KeyedExpression } from "./definition";
 import * as yaml from 'js-yaml';
 
 const keyedExpressionValidator = (keyName: string, input: Record<string, unknown>): KeyedExpression[] => {
@@ -85,7 +85,6 @@ export function parseToolDefinitionFromYaml(yamlContent: string): ToolDefinition
       return validateToolDefinition(parsed);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error("Could not parse tool definition: ", errorMessage, yamlContent);
       throw new Error(`Failed to parse tool definition: ${errorMessage}`);
     }
   }
@@ -146,7 +145,7 @@ export function marshalToolDefinitionToYaml(tool: ToolDefinition): string {
       throw new Error('Engine configuration is required');
     }
 
-    let engine: BaseEngineConfig;
+    let engine: LLMEngineConfig | RestEngineConfig;
     const engineConfig = tool.engine as Record<string, unknown>;
     switch (engineConfig.type) {
       case 'llm':

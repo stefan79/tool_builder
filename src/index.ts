@@ -4,23 +4,25 @@ import { startMCPServer } from './mcp';
 import * as dotenv from 'dotenv';
 import { registerLLMTool } from './engines/llm';
 import { startExpressServer } from './express';
-import { FileToolRepository } from './tool/file';
 import { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp';
 import { registerRESTTool } from './engines/rest';
+import { createRepository } from './tool/repository';
+import { config } from './config';
 
 const tools: Record<string, RegisteredTool> = {};
 
-const startServer = async () => {
+const startServer = async (): Promise<void> => {
     dotenv.config();
-    const config = await loadLLMConfigFromFile();
-    const engines = buildEngines(config);
-    const toolRepository = new FileToolRepository('samples');
+
+    const llmConfig = await loadLLMConfigFromFile();
+    const engines = buildEngines(llmConfig);
+    const toolRepository = createRepository(config);
 
     //Create MCP Server
     const mcpServer = startMCPServer({name: 'tool_builder', version: '1.0.0'});
 
     //Create Express Server
-    const expressServer = startExpressServer(mcpServer, toolRepository);
+    startExpressServer(mcpServer, toolRepository);
 
     //Load Job Definition
     const toolIds = await toolRepository.getToolIds();

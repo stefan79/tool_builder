@@ -56,7 +56,7 @@ const mcpToolHandler = (
     responseExp: KeyedExpression[],
     axiosInstance: AxiosInstance,
     jexl: InstanceType<typeof Jexl>
-) => async (args: Record<string, any>): Promise<CallToolResult> => {
+) => async (args: Record<string, unknown>): Promise<CallToolResult> => {
 
     const context = {request: args, env: process.env};
     const url = await jexl.eval(urlExp, context);
@@ -110,7 +110,7 @@ const mcpToolHandler = (
         }
     }
 
-    let contents: CallToolResult['content'] = [];
+    const contents: CallToolResult['content'] = [];
     for (const group of groups) {
         let resultString = ""
         for (const item of responseExp) {

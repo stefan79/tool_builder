@@ -1,4 +1,3 @@
-import { ChatMessage } from "@langchain/core/messages"
 
 export interface LLMConfig {
     name: string

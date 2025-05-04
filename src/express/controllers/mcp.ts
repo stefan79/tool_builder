@@ -1,6 +1,6 @@
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { Request, Response, RequestHandler } from 'express';
+import {RequestHandler } from 'express';
 
 const transports: Record<string, SSEServerTransport> = {}; // Store active SSE transports by session ID
 

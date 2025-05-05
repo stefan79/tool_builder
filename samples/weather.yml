@@ -39,5 +39,5 @@ engine:
       expression: "\"The current humidity is \" + response.current.humidity + \"%.\""
     - name: Clouds
       expression: "\"The current cloud cover is \" + response.current.cloud + \"%.\""
-    - name: UV
+    - name: UVIndex
       expression: "\"The current UV index is \" + response.current.uv + \".\""

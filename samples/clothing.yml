@@ -18,7 +18,7 @@ request:
   - name: humidity
     description: The humidity percentage for the day
     type: number
-  - name: uvindex
+  - name: uvIndex
     description: The UV index for the day
     type: number
   - name: cloudCover
@@ -40,10 +40,26 @@ response:
 engine:
   type: llm
   name: gpt-4o
-  prompt: day_finder
-  project: "Day Finder"
+  prompt: clothes_advisor
+  project: "Clothes Advisor"
   variables: 
-    - name: currentDate
-      expression: "now()|format('dddd, DD-MM-YYYY')"
-    - name: question
-      expression: "request.question"
+    - name: highTemp
+      expression: "request.highTemperatureCelsius"
+    - name: lowTemp
+      expression: "request.lowTemperatureCelsius"
+    - name: precipitation
+      expression: "request.precipitation"
+    - name: wind
+      expression: "request.wind"
+    - name: humidity
+      expression: "request.humidity"
+    - name: uvIndex
+      expression: "request.uvIndex"
+    - name: cloudCover
+      expression: "request.cloudCover"
+    - name: timeOfDay
+      expression: "request.timeOfDay"
+    - name: duration
+      expression: "request.duration"
+    - name: activity
+      expression: "request.activities"

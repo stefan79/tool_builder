@@ -38,6 +38,7 @@ export const registerRESTTool = async (server: McpServer, definition: ToolDefini
         axiosInstance,
         buildJexlInstance()
     );
+    console.log("Registered tool:", definition.id);
     return server.tool(
         definition.id,
         definition.description,
@@ -57,6 +58,8 @@ const mcpToolHandler = (
     axiosInstance: AxiosInstance,
     jexl: InstanceType<typeof Jexl>
 ) => async (args: Record<string, unknown>): Promise<CallToolResult> => {
+
+    console.log("Handling Tool Call:", args);
 
     const context = {request: args, env: process.env};
     const url = await jexl.eval(urlExp, context);
@@ -79,7 +82,7 @@ const mcpToolHandler = (
     }
 
     const restResponse = await axiosInstance.request(reqCfg);
-
+    console.log("Response:", restResponse.data);
 
     if(restResponse.status !== 200) {
         return {
@@ -111,12 +114,14 @@ const mcpToolHandler = (
     }
 
     const contents: CallToolResult['content'] = [];
+    console.log("Groups:", groups);
     for (const group of groups) {
         let resultString = ""
         for (const item of responseExp) {
             const value = await jexl.eval(item.expression, {...context, response: restResponse.data, group});
-            resultString += `#${item.name}\n`
+            resultString += `* ${item.name}:`
             resultString += `${value}\n\n`;
+            console.log(item.name, value);
         }
         contents.push({
             type: "text",

@@ -29,10 +29,10 @@ engine:
       expression: "env.HERE_API_KEY"
   response:
     - name: Location
-      expression: "\"Title: \" + group.title + \".\""
+      expression: group.title
     - name: Address
-      expression: "\"Address: \" + group.address.label + \".\""
+      expression: group.address.label
     - name: Coordinates
-      expression: "\"Coordinates: \" + group.position.lat + \",\" + group.position.lng + \".\""
+      expression: "\"Lat: \" + group.position.lat + \", Long: \" + group.position.lng + \".\""
 
 

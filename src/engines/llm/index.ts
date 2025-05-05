@@ -21,6 +21,7 @@ export interface Reponse {
 
 
 export const registerLLMTool = async (server: McpServer, definition: ToolDefinition, llmEngines: Record<string, LLMEngine>): Promise<RegisteredTool> => {
+    console.log("Registering LLM tool:", definition.id);
     const engine = llmEngines[definition.engine.name];
     if (!engine) {
         throw new Error(`LLM engine ${definition.engine.name} not found`);
@@ -59,14 +60,18 @@ const mcpToolHandler = (
     config: RunnableConfig,
     jexl:  InstanceType<typeof Jexl>    
 ) => async (args: Record<string, unknown>): Promise<CallToolResult> => {
-
+    console.log("LLM Tool Call:", args);
     const variables: Record<string, unknown> = {};
     for (const variableDefinition of variableDefinitions) {
         const value = await jexl.eval(variableDefinition.expression, {request: args});
         variables[variableDefinition.name] = value;
     }
     //const prompt = await promptTemplate.invoke(variables);
-    const value = await chain.invoke({...variables},config);
+    let value = await chain.invoke({...variables},config);
+    console.log("LLM Response:", value);
+    if(value instanceof Error){
+        value = value.message;
+    }
     return {
         content: [
             {
